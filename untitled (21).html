@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHAMIX A/L Science Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        const savedTheme = localStorage.getItem('chamix_site_theme') || 'amber';
+        const themesConfig = {
+            amber: { 50: '#fffbeb', 500: '#f59e0b', 600: '#d97706', 700: '#b45309' },
+            green: { 50: '#f0fdf4', 500: '#22c55e', 600: '#16a34a', 700: '#15803d' },
+            blue: { 50: '#eff6ff', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
+            violet: { 50: '#f5f3ff', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9' },
+            crimson: { 50: '#fff1f2', 500: '#f43f5e', 600: '#e11d48', 700: '#be123c' },
+            teal: { 50: '#f0fdfa', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e' },
+            indigo: { 50: '#eef2ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+            pink: { 50: '#fdf2f8', 500: '#ec4899', 600: '#db2777', 700: '#be185d' },
+            emerald: { 50: '#ecfdf5', 500: '#10b981', 600: '#059669', 700: '#047857' },
+            orange: { 50: '#fff7ed', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            fuchsia: { 50: '#fdf4ff', 500: '#d946ef', 600: '#c026d3', 700: '#a21caf' },
+            cyan: { 50: '#ecfeff', 500: '#06b6d4', 600: '#0891b2', 700: '#0e7490' },
+            lime: { 50: '#f7fee7', 500: '#84cc16', 600: '#65a30d', 700: '#4d7c0f' },
+            slate: { 50: '#f8fafc', 500: '#64748b', 600: '#475569', 700: '#334155' },
+            gold: { 50: '#fefce8', 500: '#eab308', 600: '#ca8a04', 700: '#a16207' }
+        };
+        const activeBrandColors = themesConfig[savedTheme] || themesConfig.amber;
+
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: activeBrandColors
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Top Navigation / Header -->
+    <header class="bg-[#18181b] border-b border-neutral-800 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-600 p-2.5 rounded-xl text-white font-bold text-xl shadow-lg shadow-brand-600/30">
+                    <i class="fa-solid fa-atom"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-wide text-white">CHAMIX <span class="text-brand-500">A/L Science Hub</span></h1>
+                    <p class="text-xs text-neutral-400">Elite A/L Science Portal</p>
+                </div>
+            </div>
+
+            <!-- Student Profile Summary & Admin Toggle -->
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-2 bg-neutral-900 px-3 py-1.5 rounded-xl border border-neutral-800">
+                    <img id="nav-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-brand-500">
+                    <div class="text-left">
+                        <p class="text-xs font-medium text-slate-200" id="nav-student-name">Chaminda Student</p>
+                        <span class="text-[10px] text-brand-400 font-semibold uppercase">Active Student</span>
+                    </div>
+                </div>
+                <button onclick="openModal('admin-login-modal')" class="bg-neutral-900 hover:bg-neutral-800 p-2.5 rounded-xl text-brand-400 border border-neutral-800 transition" title="Admin Panel">
+                    <i class="fa-solid fa-lock"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container with Side Menu Layout -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <!-- Left Side Menu -->
+            <aside class="lg:col-span-1 space-y-4">
+                <div class="bg-[#18181b] border border-neutral-800 rounded-2xl p-5 shadow-lg text-center space-y-3">
+                    <div class="flex justify-center">
+                        <img id="sidebar-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Student Photo" class="w-20 h-20 rounded-2xl object-cover border-2 border-brand-500 shadow-md shadow-brand-500/20">
+                    </div>
+                    <h3 id="sidebar-greeting" class="text-sm font-bold text-brand-400 transition-colors duration-500">Good Morning, Chaminda! 🌅</h3>
+                    <div id="live-time-large" class="text-base font-black text-white tracking-wider transition-colors duration-500">00:00:00 AM</div>
+                    <div id="live-date-large" class="text-[11px] text-neutral-400 font-medium">Loading date...</div>
+                </div>
+
+                <div class="bg-[#18181b] border border-neutral-800 rounded-2xl p-4 shadow-lg space-y-2">
+                    <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-wider px-3 mb-2">Student Navigation</h3>
+                    
+                    <button onclick="switchMenu('dashboard')" id="menu-dashboard" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition bg-brand-600 text-white shadow">
+                        <i class="fa-solid fa-house w-5"></i> Dashboard & Recordings
+                    </button>
+                    <button onclick="switchMenu('tasks')" id="menu-tasks" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-neutral-300 hover:bg-neutral-800 hover:text-white">
+                        <i class="fa-solid fa-list-check w-5 text-brand-500"></i> Daily Task List
+                    </button>
+                    <button onclick="switchMenu('tracker')" id="menu-tracker" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-neutral-300 hover:bg-neutral-800 hover:text-white">
+                        <i class="fa-solid fa-chart-pie w-5 text-brand-500"></i> Study Time Tracker
+                    </button>
+                    <button onclick="switchMenu('profile')" id="menu-profile" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-neutral-300 hover:bg-neutral-800 hover:text-white">
+                        <i class="fa-solid fa-user-gear w-5 text-brand-500"></i> Profile Settings
+                    </button>
+                    <button onclick="switchMenu('summary')" id="menu-summary" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-neutral-300 hover:bg-neutral-800 hover:text-white">
+                        <i class="fa-solid fa-chart-line w-5 text-brand-500"></i> Quick Summary
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Right Content Area -->
+            <div class="lg:col-span-3 space-y-6">
+
+                <!-- VIEW 1: Dashboard -->
+                <div id="view-dashboard" class="space-y-6">
+                    <div class="bg-[#18181b] border border-neutral-800 p-4 rounded-2xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div>
+                            <p class="text-xs text-neutral-400">Select Subject Hub</p>
+                            <h3 class="text-base font-bold text-white" id="current-subject-label">Physics</h3>
+                        </div>
+                        <div class="flex bg-[#0a0a0a] p-1.5 rounded-xl border border-neutral-800 space-x-1">
+                            <button onclick="switchSubject('physics')" id="tab-physics" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-brand-600 text-white shadow">Physics</button>
+                            <button onclick="switchSubject('chemistry')" id="tab-chemistry" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-neutral-300 hover:text-white">Chemistry</button>
+                            <button onclick="switchSubject('biology')" id="tab-biology" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-neutral-300 hover:text-white">Biology</button>
+                        </div>
+                    </div>
+
+                    <!-- Section Navigation -->
+                    <div class="flex border-b border-neutral-800 space-x-6">
+                        <button onclick="switchTabContent('recordings')" id="subtab-recordings" class="pb-3 text-sm font-bold text-brand-500 border-b-2 border-brand-500 transition">
+                            <i class="fa-solid fa-video mr-2"></i> YouTube Recordings
+                        </button>
+                        <button onclick="switchTabContent('pdfs')" id="subtab-pdfs" class="pb-3 text-sm font-medium text-neutral-400 hover:text-white transition">
+                            <i class="fa-solid fa-file-pdf mr-2"></i> PDF Papers & Notes
+                        </button>
+                    </div>
+
+                    <!-- Recordings View -->
+                    <div id="content-recordings" class="space-y-4">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                            <h3 class="text-lg font-bold text-white"><span id="active-subject-name-rec">Physics</span> Class Recordings</h3>
+                            <div class="flex gap-2">
+                                <select id="filter-year" onchange="renderRecordings()" class="bg-[#18181b] border border-neutral-700 rounded-lg text-xs px-3 py-1.5 text-neutral-300">
+                                    <option value="2027">2027 Batch</option>
+                                    <option value="2026">2026 Batch</option>
+                                    <option value="2025">2025 Batch</option>
+                                </select>
+                                <select id="filter-month" onchange="onMonthFilterChange()" class="bg-[#18181b] border border-neutral-700 rounded-lg text-xs px-3 py-1.5 text-neutral-300">
+                                    <option value="November">November</option>
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March">March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="December">December</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Month-wise Dynamic Topics Filter Bar -->
+                        <div id="topics-filter-bar" class="flex flex-wrap gap-2 pt-2 pb-1"></div>
+
+                        <div id="recordings-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2"></div>
+                    </div>
+
+                    <!-- PDFs View -->
+                    <div id="content-pdfs" class="space-y-4 hidden">
+                        <h3 class="text-lg font-bold text-white"><span id="active-subject-name-pdf">Physics</span> Study Notes & Papers</h3>
+                        <div id="pdfs-list" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: Daily Tasks -->
+                <div id="view-tasks" class="space-y-4 hidden">
+                    <div class="bg-[#18181b] border border-neutral-800 rounded-2xl p-6 shadow-lg space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-white text-base flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-brand-500"></i> Daily Task List Manager
+                            </h3>
+                            <span id="task-progress-text" class="text-xs bg-neutral-900 px-3 py-1 rounded-full text-brand-400 font-semibold">0/0 Done</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="new-task-input" placeholder="Add a new daily task..." class="flex-grow bg-[#0a0a0a] border border-neutral-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                            <button onclick="addNewTask()" class="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition">Add Task</button>
+                        </div>
+                        <div id="tasks-container" class="space-y-2.5 pt-2"></div>
+                        <div id="task-wish-banner" class="hidden bg-brand-500/10 border border-brand-500/30 text-brand-400 text-xs p-4 rounded-xl text-center font-medium animate-pulse">
+                            🎉 Outstanding! You completed all daily tasks today! Keep up the brilliant momentum!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: Study Time Tracker -->
+                <div id="view-tracker" class="space-y-4 hidden">
+                    <div class="bg-[#18181b] border border-neutral-800 rounded-2xl p-6 shadow-lg space-y-5">
+                        <h3 class="font-bold text-white text-base flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-brand-500"></i> Study Time Tracker & Log Manager
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-[#0a0a0a] p-4 rounded-xl border border-neutral-800">
+                            <input type="hidden" id="edit-log-index" value="-1">
+                            <div>
+                                <label class="text-xs text-neutral-400 block mb-1.5">Select Subject</label>
+                                <select id="log-subject" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white">
+                                    <option value="Physics">Physics</option>
+                                    <option value="Chemistry">Chemistry</option>
+                                    <option value="Biology">Biology</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-neutral-400 block mb-1.5">Day of Week</label>
+                                <select id="log-day" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white">
+                                    <option value="monday">Monday</option>
+                                    <option value="tuesday">Tuesday</option>
+                                    <option value="wednesday">Wednesday</option>
+                                    <option value="thursday">Thursday</option>
+                                    <option value="friday">Friday</option>
+                                    <option value="saturday">Saturday</option>
+                                    <option value="sunday">Sunday</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-neutral-400 block mb-1.5">Hours Studied</label>
+                                <input type="number" id="log-hours" step="0.5" min="0.5" max="15" value="2" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div class="flex items-end gap-2">
+                                <button onclick="saveStudyLog()" id="log-btn-text" class="flex-grow bg-brand-600 hover:bg-brand-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md">
+                                    Add Hours
+                                </button>
+                                <button onclick="resetStudyLogForm()" id="log-cancel-btn" class="hidden bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-3 py-2 rounded-xl text-xs transition">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-3 text-center">
+                            <div class="bg-[#0a0a0a] p-3 rounded-xl border border-neutral-800">
+                                <p class="text-[11px] text-neutral-400">Physics</p>
+                                <p id="stat-physics" class="text-sm font-bold text-brand-400 mt-1">0 hrs</p>
+                            </div>
+                            <div class="bg-[#0a0a0a] p-3 rounded-xl border border-neutral-800">
+                                <p class="text-[11px] text-neutral-400">Chemistry</p>
+                                <p id="stat-chemistry" class="text-sm font-bold text-brand-400 mt-1">0 hrs</p>
+                            </div>
+                            <div class="bg-[#0a0a0a] p-3 rounded-xl border border-neutral-800">
+                                <p class="text-[11px] text-neutral-400">Biology</p>
+                                <p id="stat-biology" class="text-sm font-bold text-brand-400 mt-1">0 hrs</p>
+                            </div>
+                            <div class="bg-[#0a0a0a] p-3 rounded-xl border border-neutral-800 bg-amber-950/20 border-brand-500/30">
+                                <p class="text-[11px] text-brand-300">Total Hours</p>
+                                <p id="stat-total" class="text-sm font-bold text-brand-400 mt-1">0 hrs</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                            <div class="bg-[#0a0a0a] p-4 rounded-xl border border-neutral-800 space-y-2">
+                                <h4 class="text-xs font-bold text-brand-400 text-center"><i class="fa-solid fa-calendar-day mr-1"></i> Subject-wise Daily Hours</h4>
+                                <canvas id="dailyStudyChart" height="140"></canvas>
+                            </div>
+                            <div class="bg-[#0a0a0a] p-4 rounded-xl border border-neutral-800 space-y-2">
+                                <h4 class="text-xs font-bold text-brand-400 text-center"><i class="fa-solid fa-calendar-week mr-1"></i> Weekly Mon-Sun (Subjects & Total)</h4>
+                                <canvas id="weeklyStudyChart" height="140"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#0a0a0a] p-4 rounded-xl border border-neutral-800 space-y-3">
+                            <h4 class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Study Time Logs (Edit / Delete)</h4>
+                            <div id="study-logs-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 4: Profile Settings -->
+                <div id="view-profile" class="space-y-4 hidden">
+                    <div class="bg-[#18181b] border border-neutral-800 rounded-2xl p-6 shadow-lg space-y-4 max-w-xl">
+                        <h3 class="font-bold text-white text-base flex items-center gap-2">
+                            <i class="fa-solid fa-user-gear text-brand-500"></i> Student Profile Settings
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs text-neutral-400 block mb-1">Student Name</label>
+                                <input type="text" id="input-student-name" class="w-full bg-[#0a0a0a] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500" value="Chaminda Student">
+                            </div>
+                            <div>
+                                <label class="text-xs text-neutral-400 block mb-1">Profile Photo Image URL</label>
+                                <input type="text" id="input-student-avatar" class="w-full bg-[#0a0a0a] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80">
+                            </div>
+                        </div>
+                        <button onclick="saveProfile()" class="bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition">Save Profile Changes</button>
+                    </div>
+                </div>
+
+                <!-- VIEW 5: Quick Summary -->
+                <div id="view-summary" class="space-y-4 hidden">
+                    <div class="bg-[#18181b] border border-neutral-800 rounded-2xl p-6 shadow-lg space-y-4 max-w-xl">
+                        <h3 class="font-bold text-white text-base flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-brand-500"></i> Quick Summary
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center bg-[#0a0a0a] p-4 rounded-xl border border-neutral-800">
+                                <span class="text-neutral-400 text-xs">Total Study Time:</span>
+                                <span id="summary-total-hrs" class="font-bold text-brand-400 text-sm">0 hrs</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-[#0a0a0a] p-4 rounded-xl border border-neutral-800">
+                                <span class="text-neutral-400 text-xs">Tasks Pending:</span>
+                                <span id="summary-pending-tasks" class="font-bold text-amber-400 text-sm">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#18181b] border-t border-neutral-800 py-4 mt-auto text-center text-xs text-neutral-500">
+        <p>&copy; 2026 CHAMIX A/L Science Hub. Designed for Elite A/L Students.</p>
+    </footer>
+
+    <!-- Admin Login Password Modal -->
+    <div id="admin-login-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181b] border border-neutral-800 rounded-2xl max-w-sm w-full p-6 space-y-4 relative shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-white text-base flex items-center gap-2"><i class="fa-solid fa-lock text-brand-500"></i> Admin Authentication</h3>
+                <button onclick="closeModal('admin-login-modal')" class="text-neutral-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div>
+                <label class="text-xs text-neutral-400 block mb-1">Enter Admin Password</label>
+                <input type="password" id="admin-password-input" placeholder="Enter password..." class="w-full bg-[#0a0a0a] border border-neutral-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500">
+            </div>
+            <button onclick="verifyAdminPassword()" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md">Login to Admin Panel</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181b] border border-neutral-800 rounded-2xl max-w-2xl w-full p-6 space-y-5 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-neutral-800 pb-3">
+                <h3 class="font-bold text-white text-base flex items-center gap-2"><i class="fa-solid fa-shield-halved text-brand-500"></i> Admin Panel</h3>
+                <button onclick="closeModal('admin-modal')" class="text-neutral-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- TAB SWITCHER IN ADMIN -->
+            <div class="flex border-b border-neutral-800 space-x-4">
+                <button onclick="switchAdminTab('content')" id="adm-tab-content" class="pb-2 text-xs font-bold text-brand-500 border-b-2 border-brand-500 transition">Videos/PDFs</button>
+                <button onclick="switchAdminTab('topics')" id="adm-tab-topics" class="pb-2 text-xs font-medium text-neutral-400 hover:text-white transition">Month Topics</button>
+                <button onclick="switchAdminTab('theme')" id="adm-tab-theme" class="pb-2 text-xs font-medium text-neutral-400 hover:text-white transition"><i class="fa-solid fa-palette mr-1"></i> Themes (15)</button>
+            </div>
+
+            <!-- SECTION A: Manage Videos & PDFs -->
+            <div id="admin-section-content" class="space-y-4">
+                <div class="bg-[#0a0a0a] p-4 rounded-xl border border-neutral-800 space-y-3">
+                    <h4 id="admin-form-title" class="text-xs font-bold text-brand-400 uppercase tracking-wider">Add New Content (Video or PDF)</h4>
+                    <input type="hidden" id="edit-item-id" value="">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[11px] text-neutral-400 block mb-1">Select Subject</label>
+                            <select id="admin-subject" onchange="updateAdminTopicDropdown()" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white">
+                                <option value="physics">Physics</option>
+                                <option value="chemistry">Chemistry</option>
+                                <option value="biology">Biology</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-neutral-400 block mb-1">Content Type</label>
+                            <select id="admin-type" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white">
+                                <option value="recording">YouTube Recording</option>
+                                <option value="pdf">PDF Note / Paper</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[11px] text-neutral-400 block mb-1">Month</label>
+                            <select id="admin-month" onchange="updateAdminTopicDropdown()" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white">
+                                <option value="November">November</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-neutral-400 block mb-1">Select Topic</label>
+                            <select id="admin-topic-select" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white"></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-neutral-400 block mb-1">Title</label>
+                        <input type="text" id="admin-title" placeholder="e.g. Lesson 01 Notes or Model Paper" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-neutral-400 block mb-1">Batch Year</label>
+                        <select id="admin-year" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white">
+                            <option value="2027">2027</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-neutral-400 block mb-1">YouTube URL or PDF Link</label>
+                        <input type="text" id="admin-url" placeholder="e.g. https://www.youtube.com/... or Google Drive PDF link" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="adminSaveContent()" class="flex-grow bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 rounded-xl text-xs transition">Save Content</button>
+                        <button onclick="resetAdminForm()" class="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-4 py-2.5 rounded-xl text-xs transition">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Existing Content List (Videos & PDFs)</h4>
+                    <div id="admin-content-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+
+            <!-- SECTION B: Manage Month-wise Topics -->
+            <div id="admin-section-topics" class="space-y-4 hidden">
+                <div class="bg-[#0a0a0a] p-4 rounded-xl border border-neutral-800 space-y-3">
+                    <h4 id="topic-form-title" class="text-xs font-bold text-brand-400 uppercase tracking-wider">Add Topic for Specific Month</h4>
+                    <input type="hidden" id="edit-topic-original" value="">
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="text-[11px] text-neutral-400 block mb-1">Subject</label>
+                            <select id="topic-admin-subject" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white">
+                                <option value="physics">Physics</option>
+                                <option value="chemistry">Chemistry</option>
+                                <option value="biology">Biology</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-neutral-400 block mb-1">Month</label>
+                            <select id="topic-admin-month" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white">
+                                <option value="November">November</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-neutral-400 block mb-1">Topic Name</label>
+                            <input type="text" id="topic-admin-name" placeholder="e.g. Thermal Physics" class="w-full bg-[#18181b] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                    </div>
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="adminSaveTopic()" class="flex-grow bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 rounded-xl text-xs transition">Save Month Topic</button>
+                        <button onclick="resetTopicForm()" class="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-4 py-2.5 rounded-xl text-xs transition">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Existing Month-wise Topics List</h4>
+                    <div id="admin-topics-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+
+            <!-- SECTION C: 15 Theme Colors Selector -->
+            <div id="admin-section-theme" class="space-y-4 hidden">
+                <div class="bg-[#0a0a0a] p-5 rounded-xl border border-neutral-800 space-y-4 text-center">
+                    <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider">Select from 15 Website Accent Themes</h4>
+                    <p class="text-xs text-neutral-400">Click any theme color below to apply instantly across the entire hub!</p>
+                    
+                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 pt-2">
+                        <button onclick="setTheme('amber')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-amber-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-amber-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Sunset Amber</span>
+                        </button>
+                        <button onclick="setTheme('green')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-green-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-green-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Cyber Green</span>
+                        </button>
+                        <button onclick="setTheme('blue')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-blue-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-blue-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Cyber Blue</span>
+                        </button>
+                        <button onclick="setTheme('violet')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-violet-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-violet-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Royal Violet</span>
+                        </button>
+                        <button onclick="setTheme('crimson')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-rose-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-rose-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Crimson Red</span>
+                        </button>
+                        <button onclick="setTheme('teal')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-teal-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-teal-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Neon Teal</span>
+                        </button>
+                        <button onclick="setTheme('indigo')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-indigo-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-indigo-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Electric Indigo</span>
+                        </button>
+                        <button onclick="setTheme('pink')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-pink-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-pink-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Rose Pink</span>
+                        </button>
+                        <button onclick="setTheme('emerald')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-emerald-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-emerald-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Emerald Mint</span>
+                        </button>
+                        <button onclick="setTheme('orange')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-orange-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-orange-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Deep Orange</span>
+                        </button>
+                        <button onclick="setTheme('fuchsia')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-fuchsia-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-fuchsia-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Fuchsia Glow</span>
+                        </button>
+                        <button onclick="setTheme('cyan')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-cyan-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-cyan-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Sky Cyan</span>
+                        </button>
+                        <button onclick="setTheme('lime')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-lime-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-lime-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Lime Punch</span>
+                        </button>
+                        <button onclick="setTheme('slate')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-slate-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-slate-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Classic Slate</span>
+                        </button>
+                        <button onclick="setTheme('gold')" class="p-2.5 rounded-xl border border-neutral-800 bg-[#18181b] hover:border-yellow-500 flex flex-col items-center gap-1.5 transition">
+                            <span class="w-6 h-6 rounded-full bg-yellow-500 shadow-md"></span>
+                            <span class="text-[10px] font-bold text-white">Golden Yellow</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="video-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181b] border border-neutral-800 rounded-2xl max-w-3xl w-full p-5 space-y-4 relative shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 id="modal-video-title" class="font-bold text-white text-base">Class Video Recording</h3>
+                <button onclick="closeModal('video-modal')" class="text-neutral-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-neutral-800 flex flex-col items-center justify-center p-6 text-center">
+                <div id="iframe-container" class="absolute inset-0 w-full h-full">
+                    <iframe id="modal-iframe" src="" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+                <div id="video-fallback" class="hidden z-10 space-y-3">
+                    <div class="text-brand-500 text-3xl"><i class="fa-brands fa-youtube"></i></div>
+                    <p class="text-xs text-neutral-300">This video cannot be embedded directly due to YouTube security restrictions.</p>
+                    <a id="fallback-link" href="#" target="_blank" class="inline-block bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">
+                        <i class="fa-solid fa-external-link-alt mr-1"></i> Open Video on YouTube
+                    </a>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <button id="modal-complete-btn" onclick="toggleCurrentVideoComplete()" class="bg-neutral-800 hover:bg-brand-600 text-neutral-300 hover:text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2">
+                    <i class="fa-regular fa-circle-check"></i> <span id="modal-complete-txt">Mark as Completed</span>
+                </button>
+                <p class="text-xs text-neutral-400">Click tick when you finish watching the entire lecture.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let currentSubject = 'physics';
+        let currentContentType = 'recordings';
+        let currentSelectedTopic = 'all';
+        let activeVideoId = null;
+
+        let studentProfile = JSON.parse(localStorage.getItem('chamix_student')) || {
+            name: "Chaminda Student",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80"
+        };
+
+        let monthTopicsDatabase = JSON.parse(localStorage.getItem('chamix_month_topics_db')) || {
+            physics: {
+                November: ["Mechanics", "Thermal Physics"],
+                January: ["Waves & Oscillations", "Electricity"]
+            },
+            chemistry: {
+                November: ["Organic Chemistry"],
+                January: ["Inorganic Chemistry", "Physical Chemistry"]
+            },
+            biology: {
+                November: ["Human Physiology"],
+                January: ["Cell Biology", "Genetics"]
+            }
+        };
+
+        let studyLogs = JSON.parse(localStorage.getItem('chamix_study_logs')) || [
+            { id: 1, subject: 'Physics', day: 'monday', hours: 3 },
+            { id: 2, subject: 'Chemistry', day: 'tuesday', hours: 2.5 },
+            { id: 3, subject: 'Biology', day: 'wednesday', hours: 4 }
+        ];
+
+        let tasks = JSON.parse(localStorage.getItem('chamix_tasks')) || [
+            { id: 1, text: "Complete Physics Mechanics Past Paper", done: true },
+            { id: 2, text: "Revise Organic Chemistry Name Reactions", done: false },
+            { id: 3, text: "Read Human Physiology Unit Notes", done: false }
+        ];
+
+        let completedVideos = JSON.parse(localStorage.getItem('chamix_completed_vids')) || {};
+
+        let contentDatabase = JSON.parse(localStorage.getItem('chamix_content_db')) || {
+            physics: {
+                recordings: [
+                    { id: 'p1', title: 'Mechanics - Gravitational Fields Theory 01', topic: 'Mechanics', year: '2027', month: 'November', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+                    { id: 'p2', title: 'Thermal Physics - Heat Capacity & Expansion', topic: 'Thermal Physics', year: '2027', month: 'November', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+                ],
+                pdfs: [
+                    { id: 'pp1', title: 'Mechanics Revision Model Paper 2027', topic: 'Mechanics', year: '2027', month: 'November', url: '#' }
+                ]
+            },
+            chemistry: {
+                recordings: [
+                    { id: 'c1', title: 'Organic Chemistry - Benzene Reactions 01', topic: 'Organic Chemistry', year: '2027', month: 'November', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+                ],
+                pdfs: [
+                    { id: 'cp1', title: 'Organic Name Reactions Cheat Sheet', topic: 'Organic Chemistry', year: '2027', month: 'November', url: '#' }
+                ]
+            },
+            biology: {
+                recordings: [
+                    { id: 'b1', title: 'Human Physiology - Nervous System Part 1', topic: 'Human Physiology', year: '2027', month: 'November', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+                ],
+                pdfs: [
+                    { id: 'bp1', title: 'Nervous System Diagrams & Structures', topic: 'Human Physiology', year: '2027', month: 'November', url: '#' }
+                ]
+            }
+        };
+
+        let dailyChartInstance = null;
+        let weeklyChartInstance = null;
+
+        window.onload = function() {
+            updateClockAndGreeting();
+            setInterval(updateClockAndGreeting, 1000);
+            renderProfile();
+            switchSubject('physics');
+            renderTasks();
+            updateStudyStats();
+            renderStudyLogsList();
+            initCharts();
+            updateSummaryView();
+        };
+
+        function setTheme(themeName) {
+            localStorage.setItem('chamix_site_theme', themeName);
+            alert('Theme updated successfully! The page will now reload.');
+            location.reload();
+        }
+
+        function updateClockAndGreeting() {
+            const now = new Date();
+            const hours = now.getHours();
+            
+            document.getElementById('live-time-large').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('live-date-large').innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
+            let greeting = "Good Morning";
+            let emoji = "🌅";
+            let colorClass = "text-brand-500";
+
+            if (hours >= 12 && hours < 17) {
+                greeting = "Good Afternoon";
+                emoji = "☀️";
+            } else if (hours >= 17 && hours < 21) {
+                greeting = "Good Evening";
+                emoji = "🌆";
+            } else if (hours >= 21 || hours < 4) {
+                greeting = "Good Night";
+                emoji = "🌙";
+            }
+
+            const greetingText = `${greeting}, ${studentProfile.name.split(' ')[0]}! <span class="text-lg">${emoji}</span>`;
+            document.getElementById('sidebar-greeting').innerHTML = greetingText;
+            document.getElementById('sidebar-greeting').className = `text-sm font-bold ${colorClass} transition-colors duration-500`;
+            document.getElementById('live-time-large').className = `text-base font-black ${colorClass} tracking-wider transition-colors duration-500`;
+        }
+
+        function switchMenu(viewId) {
+            ['dashboard', 'tasks', 'tracker', 'profile', 'summary'].forEach(v => {
+                const view = document.getElementById(`view-${v}`);
+                const btn = document.getElementById(`menu-${v}`);
+                if (v === viewId) {
+                    view.classList.remove('hidden');
+                    btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition bg-brand-600 text-white shadow";
+                } else {
+                    view.classList.add('hidden');
+                    btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-neutral-300 hover:bg-neutral-800 hover:text-white";
+                }
+            });
+        }
+
+        function verifyAdminPassword() {
+            const pwd = document.getElementById('admin-password-input').value;
+            if (pwd === 'chamix123') {
+                closeModal('admin-login-modal');
+                document.getElementById('admin-password-input').value = '';
+                renderAdminContentList();
+                renderAdminTopicsList();
+                updateAdminTopicDropdown();
+                openModal('admin-modal');
+            } else {
+                alert('Incorrect Admin Password! Try again.');
+            }
+        }
+
+        function switchAdminTab(tab) {
+            const contentSec = document.getElementById('admin-section-content');
+            const topicsSec = document.getElementById('admin-section-topics');
+            const themeSec = document.getElementById('admin-section-theme');
+            const tabContent = document.getElementById('adm-tab-content');
+            const tabTopics = document.getElementById('adm-tab-topics');
+            const tabTheme = document.getElementById('adm-tab-theme');
+
+            contentSec.classList.add('hidden');
+            topicsSec.classList.add('hidden');
+            themeSec.classList.add('hidden');
+            tabContent.className = "pb-2 text-xs font-medium text-neutral-400 hover:text-white transition";
+            tabTopics.className = "pb-2 text-xs font-medium text-neutral-400 hover:text-white transition";
+            tabTheme.className = "pb-2 text-xs font-medium text-neutral-400 hover:text-white transition";
+
+            if (tab === 'content') {
+                contentSec.classList.remove('hidden');
+                tabContent.className = "pb-2 text-xs font-bold text-brand-500 border-b-2 border-brand-500 transition";
+            } else if (tab === 'topics') {
+                topicsSec.classList.remove('hidden');
+                tabTopics.className = "pb-2 text-xs font-bold text-brand-500 border-b-2 border-brand-500 transition";
+                renderAdminTopicsList();
+            } else if (tab === 'theme') {
+                themeSec.classList.remove('hidden');
+                tabTheme.className = "pb-2 text-xs font-bold text-brand-500 border-b-2 border-brand-500 transition";
+            }
+        }
+
+        function renderProfile() {
+            document.getElementById('nav-student-name').innerText = studentProfile.name;
+            document.getElementById('nav-avatar').src = studentProfile.avatar;
+            document.getElementById('sidebar-avatar').src = studentProfile.avatar;
+            document.getElementById('input-student-name').value = studentProfile.name;
+            document.getElementById('input-student-avatar').value = studentProfile.avatar;
+        }
+
+        function saveProfile() {
+            studentProfile.name = document.getElementById('input-student-name').value;
+            studentProfile.avatar = document.getElementById('input-student-avatar').value;
+            localStorage.setItem('chamix_student', JSON.stringify(studentProfile));
+            renderProfile();
+            updateClockAndGreeting();
+            alert('Profile updated successfully!');
+        }
+
+        function switchSubject(subj) {
+            currentSubject = subj;
+            currentSelectedTopic = 'all';
+            ['physics', 'chemistry', 'biology'].forEach(s => {
+                const btn = document.getElementById(`tab-${s}`);
+                if (s === subj) {
+                    btn.className = "px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-brand-600 text-white shadow";
+                } else {
+                    btn.className = "px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-neutral-300 hover:text-white";
+                }
+            });
+
+            const capitalized = subj.charAt(0).toUpperCase() + subj.slice(1);
+            document.getElementById('current-subject-label').innerText = capitalized;
+            document.getElementById('active-subject-name-rec').innerText = capitalized;
+            document.getElementById('active-subject-name-pdf').innerText = capitalized;
+
+            renderTopicsFilterBar();
+            renderRecordings();
+            renderPDFs();
+        }
+
+        function switchTabContent(type) {
+            currentContentType = type;
+            const recTab = document.getElementById('subtab-recordings');
+            const pdfTab = document.getElementById('subtab-pdfs');
+            const recDiv = document.getElementById('content-recordings');
+            const pdfDiv = document.getElementById('content-pdfs');
+
+            if (type === 'recordings') {
+                recTab.className = "pb-3 text-sm font-bold text-brand-500 border-b-2 border-brand-500 transition";
+                pdfTab.className = "pb-3 text-sm font-medium text-neutral-400 hover:text-white transition";
+                recDiv.classList.remove('hidden');
+                pdfDiv.classList.add('hidden');
+            } else {
+                pdfTab.className = "pb-3 text-sm font-bold text-brand-500 border-b-2 border-brand-500 transition";
+                recTab.className = "pb-3 text-sm font-medium text-neutral-400 hover:text-white transition";
+                pdfDiv.classList.remove('hidden');
+                recDiv.classList.add('hidden');
+            }
+        }
+
+        function onMonthFilterChange() {
+            currentSelectedTopic = 'all';
+            renderTopicsFilterBar();
+            renderRecordings();
+            renderPDFs();
+        }
+
+        function renderTopicsFilterBar() {
+            const bar = document.getElementById('topics-filter-bar');
+            bar.innerHTML = '';
+            const selectedMonth = document.getElementById('filter-month').value;
+            const topics = monthTopicsDatabase[currentSubject]?.[selectedMonth] || [];
+
+            const allBtn = document.createElement('button');
+            allBtn.className = `px-3 py-1.5 rounded-xl text-xs font-semibold transition ${currentSelectedTopic === 'all' ? 'bg-brand-600 text-white shadow' : 'bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white'}`;
+            allBtn.innerHTML = `<i class="fa-solid fa-layer-group mr-1"></i> All (${selectedMonth})`;
+            allBtn.onclick = () => { currentSelectedTopic = 'all'; renderTopicsFilterBar(); renderRecordings(); };
+            bar.appendChild(allBtn);
+
+            topics.forEach(top => {
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1.5 rounded-xl text-xs font-semibold transition ${currentSelectedTopic === top ? 'bg-brand-600 text-white shadow' : 'bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white'}`;
+                btn.innerText = top;
+                btn.onclick = () => { currentSelectedTopic = top; renderTopicsFilterBar(); renderRecordings(); };
+                bar.appendChild(btn);
+            });
+        }
+
+        function renderRecordings() {
+            const grid = document.getElementById('recordings-grid');
+            grid.innerHTML = '';
+            const yrFilter = document.getElementById('filter-year').value;
+            const moFilter = document.getElementById('filter-month').value;
+
+            let list = contentDatabase[currentSubject]?.recordings || [];
+            let filtered = list.filter(item => {
+                if (yrFilter !== 'all' && item.year !== yrFilter) return false;
+                if (item.month !== moFilter) return false;
+                if (currentSelectedTopic !== 'all' && item.topic !== currentSelectedTopic) return false;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center py-8 text-neutral-500 text-xs">No recordings found for ${moFilter} under this topic.</div>`;
+                return;
+            }
+
+            filtered.forEach(rec => {
+                const isCompleted = completedVideos[rec.id];
+                const card = document.createElement('div');
+                
+                if (isCompleted) {
+                    card.className = "bg-emerald-950/30 border-2 border-emerald-500/60 rounded-2xl p-4 flex flex-col justify-between shadow-lg shadow-emerald-500/10 transition";
+                } else {
+                    card.className = "bg-[#18181b] border border-neutral-800 rounded-2xl p-4 flex flex-col justify-between hover:border-neutral-700 transition shadow-md";
+                }
+
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-[10px] ${isCompleted ? 'bg-emerald-900/50 text-emerald-300 border border-emerald-500/40' : 'bg-neutral-900 text-brand-400'} px-2 py-0.5 rounded font-semibold">${rec.year} • ${rec.month} | <span class="text-white">${rec.topic || 'General'}</span></span>
+                            <span class="text-xs ${isCompleted ? 'text-emerald-400 font-bold' : 'text-neutral-500'} flex items-center gap-1">
+                                <i class="fa-solid fa-circle-check"></i> ${isCompleted ? 'Completed ✓' : 'Pending'}
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-white text-sm line-clamp-2">${rec.title}</h4>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center pt-3 border-t ${isCompleted ? 'border-emerald-500/30' : 'border-neutral-800/80'}">
+                        <button onclick="openVideoModal('${rec.id}', '${rec.title.replace(/'/g, "\\'")}', '${rec.url}')" class="${isCompleted ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-brand-600/20 hover:bg-brand-600 text-brand-400 hover:text-white'} px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow">
+                            <i class="fa-solid fa-play"></i> Watch Video
+                        </button>
+                        <button onclick="toggleVideoComplete('${rec.id}')" class="text-xs ${isCompleted ? 'text-emerald-400' : 'text-neutral-400 hover:text-brand-400'} px-2 py-1 transition flex items-center gap-1 font-semibold">
+                            <i class="fa-${isCompleted ? 'solid' : 'regular'} fa-square-check text-base"></i> ${isCompleted ? 'Done' : 'Mark'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderPDFs() {
+            const listDiv = document.getElementById('pdfs-list');
+            listDiv.innerHTML = '';
+            const moFilter = document.getElementById('filter-month').value;
+            let list = contentDatabase[currentSubject]?.pdfs || [];
+            let filtered = list.filter(pdf => pdf.month === moFilter);
+
+            if (filtered.length === 0) {
+                listDiv.innerHTML = `<div class="text-center py-8 text-neutral-500 text-xs">No PDF notes available for ${moFilter}.</div>`;
+                return;
+            }
+
+            filtered.forEach(pdf => {
+                const item = document.createElement('div');
+                item.className = "bg-[#18181b] border border-neutral-800 rounded-xl p-4 flex justify-between items-center hover:border-neutral-700 transition shadow-md";
+                item.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-red-500/10 text-red-500 p-2.5 rounded-xl text-base"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div>
+                            <h4 class="font-bold text-white text-xs md:text-sm">${pdf.title}</h4>
+                            <p class="text-[10px] text-neutral-400">${pdf.year} • ${pdf.month} | Topic: ${pdf.topic || 'General'}</p>
+                        </div>
+                    </div>
+                    <a href="${pdf.url}" target="_blank" class="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> Download / View
+                    </a>
+                `;
+                listDiv.appendChild(item);
+            });
+        }
+
+        function openVideoModal(id, title, rawUrl) {
+            activeVideoId = id;
+            document.getElementById('modal-video-title').innerText = title;
+            
+            let embedUrl = rawUrl;
+            let watchUrl = rawUrl;
+
+            if (rawUrl.includes('watch?v=')) {
+                const videoId = rawUrl.split('watch?v=')[1].split('&')[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+            } else if (rawUrl.includes('youtu.be/')) {
+                const videoId = rawUrl.split('youtu.be/')[1].split('?')[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+            }
+
+            const iframeContainer = document.getElementById('iframe-container');
+            const fallbackDiv = document.getElementById('video-fallback');
+            const iframe = document.getElementById('modal-iframe');
+            const fallbackLink = document.getElementById('fallback-link');
+
+            iframe.src = embedUrl;
+            fallbackLink.href = watchUrl;
+
+            if (rawUrl.includes('m.youtube.com') || rawUrl.includes('watch?v=')) {
+                iframeContainer.classList.add('hidden');
+                fallbackDiv.classList.remove('hidden');
+            } else {
+                iframeContainer.classList.remove('hidden');
+                fallbackDiv.classList.add('hidden');
+            }
+
+            document.getElementById('video-modal').classList.remove('hidden');
+            updateModalCompleteButton();
+        }
+
+        function toggleVideoComplete(id) {
+            completedVideos[id] = !completedVideos[id];
+            localStorage.setItem('chamix_completed_vids', JSON.stringify(completedVideos));
+            renderRecordings();
+            if (activeVideoId === id) updateModalCompleteButton();
+        }
+
+        function toggleCurrentVideoComplete() {
+            if (activeVideoId) toggleVideoComplete(activeVideoId);
+        }
+
+        function updateModalCompleteButton() {
+            const isComp = completedVideos[activeVideoId];
+            const btn = document.getElementById('modal-complete-btn');
+            const txt = document.getElementById('modal-complete-txt');
+            if (isComp) {
+                btn.className = "bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 shadow";
+                txt.innerText = "Completed ✓";
+            } else {
+                btn.className = "bg-neutral-800 hover:bg-brand-600 text-neutral-300 hover:text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2";
+                txt.innerText = "Mark as Completed";
+            }
+        }
+
+        function updateAdminTopicDropdown() {
+            const subj = document.getElementById('admin-subject').value;
+            const month = document.getElementById('admin-month').value;
+            const select = document.getElementById('admin-topic-select');
+            select.innerHTML = '';
+            const topics = monthTopicsDatabase[subj]?.[month] || [];
+            topics.forEach(top => {
+                const opt = document.createElement('option');
+                opt.value = top;
+                opt.innerText = top;
+                select.appendChild(opt);
+            });
+        }
+
+        function adminSaveTopic() {
+            const subj = document.getElementById('topic-admin-subject').value;
+            const month = document.getElementById('topic-admin-month').value;
+            const topicName = document.getElementById('topic-admin-name').value.trim();
+            const origTopic = document.getElementById('edit-topic-original').value;
+
+            if (!topicName) {
+                alert('Please enter a topic name.');
+                return;
+            }
+
+            if (!monthTopicsDatabase[subj]) monthTopicsDatabase[subj] = {};
+            if (!monthTopicsDatabase[subj][month]) monthTopicsDatabase[subj][month] = [];
+
+            if (origTopic) {
+                const idx = monthTopicsDatabase[subj][month].indexOf(origTopic);
+                if (idx !== -1) monthTopicsDatabase[subj][month][idx] = topicName;
+                alert('Month topic updated successfully!');
+            } else {
+                if (monthTopicsDatabase[subj][month].includes(topicName)) {
+                    alert('This topic already exists for this month!');
+                    return;
+                }
+                monthTopicsDatabase[subj][month].push(topicName);
+                alert('Month topic added successfully!');
+            }
+
+            localStorage.setItem('chamix_month_topics_db', JSON.stringify(monthTopicsDatabase));
+            resetTopicForm();
+            renderAdminTopicsList();
+            renderTopicsFilterBar();
+            updateAdminTopicDropdown();
+        }
+
+        function editTopic(subj, month, topicName) {
+            document.getElementById('topic-admin-subject').value = subj;
+            document.getElementById('topic-admin-month').value = month;
+            document.getElementById('topic-admin-name').value = topicName;
+            document.getElementById('edit-topic-original').value = topicName;
+            document.getElementById('topic-form-title').innerText = "Edit Month Topic";
+        }
+
+        function deleteTopic(subj, month, topicName) {
+            if (confirm(`Are you sure you want to delete topic "${topicName}" from ${month}?`)) {
+                monthTopicsDatabase[subj][month] = monthTopicsDatabase[subj][month].filter(t => t !== topicName);
+                localStorage.setItem('chamix_month_topics_db', JSON.stringify(monthTopicsDatabase));
+                renderAdminTopicsList();
+                renderTopicsFilterBar();
+                updateAdminTopicDropdown();
+            }
+        }
+
+        function resetTopicForm() {
+            document.getElementById('topic-admin-name').value = '';
+            document.getElementById('edit-topic-original').value = '';
+            document.getElementById('topic-form-title').innerText = "Add Topic for Specific Month";
+        }
+
+        function renderAdminTopicsList() {
+            const container = document.getElementById('admin-topics-list');
+            container.innerHTML = '';
+
+            Object.keys(monthTopicsDatabase).forEach(subj => {
+                Object.keys(monthTopicsDatabase[subj]).forEach(month => {
+                    monthTopicsDatabase[subj][month].forEach(top => {
+                        const div = document.createElement('div');
+                        div.className = "flex items-center justify-between bg-[#18181b] p-2.5 rounded-xl border border-neutral-800 text-xs";
+                        div.innerHTML = `
+                            <div>
+                                <span class="text-[9px] uppercase bg-neutral-900 px-1.5 py-0.5 rounded text-brand-400 font-bold">${subj} • ${month}</span>
+                                <span class="font-bold text-white ml-2">${top}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="editTopic('${subj}', '${month}', '${top}')" class="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-2.5 py-1 rounded-lg transition" title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button onclick="deleteTopic('${subj}', '${month}', '${top}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2.5 py-1 rounded-lg transition" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    });
+                });
+            });
+        }
+
+        function renderAdminContentList() {
+            const container = document.getElementById('admin-content-list');
+            container.innerHTML = '';
+            
+            ['physics', 'chemistry', 'biology'].forEach(subj => {
+                ['recordings', 'pdfs'].forEach(type => {
+                    const items = contentDatabase[subj][type] || [];
+                    items.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = "flex items-center justify-between bg-[#18181b] p-2.5 rounded-xl border border-neutral-800 text-xs";
+                        div.innerHTML = `
+                            <div class="space-y-0.5 truncate pr-2">
+                                <span class="text-[9px] uppercase bg-neutral-900 px-1.5 py-0.5 rounded text-brand-400 font-bold">${subj} • ${type} • ${item.month}</span>
+                                <p class="font-bold text-white truncate">${item.title}</p>
+                            </div>
+                            <div class="flex items-center gap-1.5 flex-shrink-0">
+                                <button onclick="editContent('${subj}', '${type}', '${item.id}')" class="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-2.5 py-1 rounded-lg transition" title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button onclick="deleteContent('${subj}', '${type}', '${item.id}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2.5 py-1 rounded-lg transition" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    });
+                });
+            });
+        }
+
+        function adminSaveContent() {
+            const editId = document.getElementById('edit-item-id').value;
+            const subj = document.getElementById('admin-subject').value;
+            const type = document.getElementById('admin-type').value;
+            const month = document.getElementById('admin-month').value;
+            const topic = document.getElementById('admin-topic-select').value;
+            const title = document.getElementById('admin-title').value.trim();
+            const year = document.getElementById('admin-year').value;
+            let url = document.getElementById('admin-url').value.trim();
+
+            if (!title || !url) {
+                alert('Please fill in both title and URL.');
+                return;
+            }
+
+            const targetKey = type === 'recording' ? 'recordings' : 'pdfs';
+
+            if (editId) {
+                ['physics', 'chemistry', 'biology'].forEach(s => {
+                    ['recordings', 'pdfs'].forEach(t => {
+                        contentDatabase[s][t] = contentDatabase[s][t].filter(i => i.id !== editId);
+                    });
+                });
+                contentDatabase[subj][targetKey].push({ id: editId, title, topic, year, month, url });
+                alert('Content updated successfully!');
+            } else {
+                contentDatabase[subj][targetKey].push({ id: 'item_' + Date.now(), title, topic, year, month, url });
+                alert('Content added successfully!');
+            }
+
+            localStorage.setItem('chamix_content_db', JSON.stringify(contentDatabase));
+            resetAdminForm();
+            renderAdminContentList();
+            renderRecordings();
+            renderPDFs();
+        }
+
+        function editContent(subj, type, id) {
+            const item = contentDatabase[subj][type].find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('edit-item-id').value = item.id;
+            document.getElementById('admin-subject').value = subj;
+            document.getElementById('admin-type').value = type === 'recordings' ? 'recording' : 'pdf';
+            document.getElementById('admin-month').value = item.month || 'November';
+            document.getElementById('admin-subject').dispatchEvent(new Event('change'));
+            document.getElementById('admin-topic-select').value = item.topic || '';
+            document.getElementById('admin-title').value = item.title;
+            document.getElementById('admin-year').value = item.year;
+            document.getElementById('admin-url').value = item.url;
+            document.getElementById('admin-form-title').innerText = "Edit Existing Content";
+        }
+
+        function deleteContent(subj, type, id) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                contentDatabase[subj][type] = contentDatabase[subj][type].filter(i => i.id !== id);
+                localStorage.setItem('chamix_content_db', JSON.stringify(contentDatabase));
+                renderAdminContentList();
+                renderRecordings();
+                renderPDFs();
+            }
+        }
+
+        function resetAdminForm() {
+            document.getElementById('edit-item-id').value = '';
+            document.getElementById('admin-title').value = '';
+            document.getElementById('admin-url').value = '';
+            document.getElementById('admin-form-title').innerText = "Add New Content (Video or PDF)";
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasks-container');
+            container.innerHTML = '';
+            let completedCount = 0;
+
+            tasks.forEach(t => {
+                if (t.done) completedCount++;
+                const div = document.createElement('div');
+                div.className = `flex items-center justify-between p-3 rounded-xl border transition ${t.done ? 'bg-amber-950/20 border-brand-500/30 text-neutral-400 line-through' : 'bg-[#0a0a0a] border-neutral-800 text-white'}`;
+                div.innerHTML = `
+                    <div class="flex items-center space-x-3 cursor-pointer flex-grow" onclick="toggleTask(${t.id})">
+                        <i class="fa-${t.done ? 'solid' : 'regular'} fa-square-check text-brand-500 text-base"></i>
+                        <span class="text-xs">${t.text}</span>
+                    </div>
+                    <button onclick="deleteTask(${t.id})" class="text-neutral-600 hover:text-red-400 text-xs px-2"><i class="fa-solid fa-trash"></i></button>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('task-progress-text').innerText = `${completedCount}/${tasks.length} Done`;
+            updateSummaryView();
+
+            const wishBanner = document.getElementById('task-wish-banner');
+            if (tasks.length > 0 && completedCount === tasks.length) {
+                wishBanner.classList.remove('hidden');
+            } else {
+                wishBanner.classList.add('hidden');
+            }
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
+            localStorage.setItem('chamix_tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function addNewTask() {
+            const input = document.getElementById('new-task-input');
+            const val = input.value.trim();
+            if (!val) return;
+            tasks.push({ id: Date.now(), text: val, done: false });
+            localStorage.setItem('chamix_tasks', JSON.stringify(tasks));
+            input.value = '';
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            localStorage.setItem('chamix_tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function saveStudyLog() {
+            const index = parseInt(document.getElementById('edit-log-index').value);
+            const subject = document.getElementById('log-subject').value;
+            const day = document.getElementById('log-day').value;
+            const hours = parseFloat(document.getElementById('log-hours').value);
+
+            if (isNaN(hours) || hours <= 0) return;
+
+            if (index >= 0) {
+                studyLogs[index] = { id: studyLogs[index].id, subject, day, hours };
+                alert('Study log updated successfully!');
+            } else {
+                studyLogs.push({ id: Date.now(), subject, day, hours });
+                alert('Study hours logged successfully!');
+            }
+
+            localStorage.setItem('chamix_study_logs', JSON.stringify(studyLogs));
+            resetStudyLogForm();
+            updateStudyStats();
+            renderStudyLogsList();
+            updateCharts();
+            updateSummaryView();
+        }
+
+        function editStudyLog(index) {
+            const log = studyLogs[index];
+            if (!log) return;
+
+            document.getElementById('edit-log-index').value = index;
+            document.getElementById('log-subject').value = log.subject;
+            document.getElementById('log-day').value = log.day;
+            document.getElementById('log-hours').value = log.hours;
+
+            document.getElementById('log-btn-text').innerText = "Update Hours";
+            document.getElementById('log-cancel-btn').classList.remove('hidden');
+        }
+
+        function deleteStudyLog(index) {
+            if (confirm('Are you sure you want to delete this study log?')) {
+                studyLogs.splice(index, 1);
+                localStorage.setItem('chamix_study_logs', JSON.stringify(studyLogs));
+                resetStudyLogForm();
+                updateStudyStats();
+                renderStudyLogsList();
+                updateCharts();
+                updateSummaryView();
+            }
+        }
+
+        function resetStudyLogForm() {
+            document.getElementById('edit-log-index').value = "-1";
+            document.getElementById('log-hours').value = "2";
+            document.getElementById('log-btn-text').innerText = "Add Hours";
+            document.getElementById('log-cancel-btn').classList.add('hidden');
+        }
+
+        function renderStudyLogsList() {
+            const container = document.getElementById('study-logs-list');
+            container.innerHTML = '';
+
+            if (studyLogs.length === 0) {
+                container.innerHTML = `<div class="text-center py-4 text-neutral-500 text-xs">No study time logged yet.</div>`;
+                return;
+            }
+
+            studyLogs.forEach((log, index) => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between bg-[#18181b] p-2.5 rounded-xl border border-neutral-800 text-xs";
+                div.innerHTML = `
+                    <div>
+                        <span class="font-bold text-brand-400">${log.subject}</span> 
+                        <span class="text-neutral-400 uppercase text-[10px] bg-neutral-900 px-2 py-0.5 rounded ml-2">${log.day}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-white">${log.hours} hrs</span>
+                        <div class="flex gap-1">
+                            <button onclick="editStudyLog(${index})" class="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-2 py-1 rounded transition" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteStudyLog(${index})" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2 py-1 rounded transition" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateStudyStats() {
+            let totals = { Physics: 0, Chemistry: 0, Biology: 0 };
+            studyLogs.forEach(log => {
+                if (totals[log.subject] !== undefined) {
+                    totals[log.subject] += log.hours;
+                }
+            });
+
+            document.getElementById('stat-physics').innerText = `${totals.Physics} hrs`;
+            document.getElementById('stat-chemistry').innerText = `${totals.Chemistry} hrs`;
+            document.getElementById('stat-biology').innerText = `${totals.Biology} hrs`;
+            
+            const totalAll = totals.Physics + totals.Chemistry + totals.Biology;
+            document.getElementById('stat-total').innerText = `${totalAll.toFixed(1)} hrs`;
+        }
+
+        function updateSummaryView() {
+            let totalAll = studyLogs.reduce((acc, curr) => acc + curr.hours, 0);
+            document.getElementById('summary-total-hrs').innerText = `${totalAll.toFixed(1)} hrs`;
+            const pending = tasks.filter(t => !t.done).length;
+            document.getElementById('summary-pending-tasks').innerText = pending;
+        }
+
+        function initCharts() {
+            let totals = { Physics: 0, Chemistry: 0, Biology: 0 };
+            studyLogs.forEach(log => { if (totals[log.subject] !== undefined) totals[log.subject] += log.hours; });
+
+            const ctxDaily = document.getElementById('dailyStudyChart').getContext('2d');
+            dailyChartInstance = new Chart(ctxDaily, {
+                type: 'bar',
+                data: {
+                    labels: ['Physics', 'Chemistry', 'Biology'],
+                    datasets: [{
+                        label: 'Hours',
+                        data: [totals.Physics, totals.Chemistry, totals.Biology],
+                        backgroundColor: ['#f59e0b', '#f97316', '#eab308'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a3a3a3', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#a3a3a3', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            const daysKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            
+            function getWeeklySubData(subj) {
+                return daysKeys.map(d => {
+                    return studyLogs.filter(l => l.day === d && l.subject.toLowerCase() === subj.toLowerCase())
+                                   .reduce((sum, l) => sum + l.hours, 0);
+                });
+            }
+
+            const physicsArr = getWeeklySubData('physics');
+            const chemArr = getWeeklySubData('chemistry');
+            const bioArr = getWeeklySubData('biology');
+            const totalArr = daysKeys.map((_, i) => physicsArr[i] + chemArr[i] + bioArr[i]);
+
+            const ctxWeekly = document.getElementById('weeklyStudyChart').getContext('2d');
+            weeklyChartInstance = new Chart(ctxWeekly, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        { label: 'Physics', data: physicsArr, backgroundColor: '#f59e0b', borderRadius: 4 },
+                        { label: 'Chemistry', data: chemArr, backgroundColor: '#f97316', borderRadius: 4 },
+                        { label: 'Biology', data: bioArr, backgroundColor: '#eab308', borderRadius: 4 },
+                        { label: 'Total Hours', data: totalArr, type: 'line', borderColor: '#fbbf24', backgroundColor: '#fbbf24', borderWidth: 2, tension: 0.3 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { 
+                        legend: { 
+                            display: true, 
+                            labels: { color: '#a3a3a3', font: { size: 10 }, boxWidth: 12 } 
+                        } 
+                    },
+                    scales: {
+                        y: { stacked: false, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a3a3a3', font: { size: 10 } } },
+                        x: { stacked: false, grid: { display: false }, ticks: { color: '#a3a3a3', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { 
+            document.getElementById(id).classList.add('hidden'); 
+            if (id === 'video-modal') document.getElementById('modal-iframe').src = '';
+        }
+    </script>
+</body>
+</html>
